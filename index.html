@@ -1,0 +1,78 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>課題「模様を描画」</title>
+  </head>
+  <body>
+    <!-- socket.io CDN -->
+    <script
+      src="https://cdn.socket.io/4.6.0/socket.io.min.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- p5.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.8.0/lib/p5.js"></script>
+
+    <script>
+      const socket = io();
+      let sensor_value = 0;
+      let button_value = 'release';
+
+      socket.on('button_value', (recieve) => {
+        sensor_value = recieve.sensor;
+        button_value = recieve.button;
+      });
+
+      let obj = {
+        x: 0,
+        y: 0,
+        c: 0,
+        r: 0,
+        s: 0,
+      };
+
+      function setup() {
+        createCanvas(640, 480);
+        rectMode(CENTER);
+        colorMode(HSL);
+        noStroke();
+      }
+
+      function draw() {
+        if (button_value === 'hold') {
+          console.log('click');
+          obj.x = Math.floor(Math.random() * 640);
+          obj.y = Math.floor(Math.random() * 480);
+          obj.c = Math.floor(Math.random() * 100);
+
+          //ランダムな値を追加
+
+          obj.r = Math.floor(Math.random() * 360);
+          obj.s = Math.random() * 2 + 0.5;
+
+          //座標空間を保存
+          push();
+
+          //移動、回転、拡大縮小
+          translate(obj.x, obj.y);
+          rotate(obj.r);
+          scale(obj.s);
+
+          fill(180, 50, obj.c, 0.5);
+
+          //x座標とy座標を修正
+          circle(sensor_value, 30, 20);
+
+          //保存した状態に戻す
+          pop();
+        } else {
+          clear();
+        }
+      }
+    </script>
+  </body>
+</html>
